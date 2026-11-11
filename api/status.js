@@ -1,10 +1,4 @@
 // api/status.js
-import Replicate from "replicate";
-
-const replicate = new Replicate({
-  auth: process.env.REPLICATE_API_TOKEN,
-});
-
 export default async function handler(req, res) {
   const { id } = req.query;
 
@@ -13,29 +7,37 @@ export default async function handler(req, res) {
   }
 
   try {
-    const prediction = await replicate.predictions.get(id);
+    const response = await fetch(`https://polza.ai/api/v1/media/${id}`, {
+      headers: {
+        'Authorization': `Bearer ${process.env.POLZA_API_KEY}`,
+      },
+    });
 
-    // Если готово — отдаём ссылку на видео
-    if (prediction.status === 'succeeded') {
+    if (!response.ok) {
+      return res.status(500).json({ error: 'Ошибка проверки статуса' });
+    }
+
+    const data = await response.json();
+
+    if (data.status === 'completed') {
       return res.status(200).json({
         status: 'succeeded',
-        videoUrl: prediction.output, // Обычно это прямая ссылка на .mp4
+        videoUrl: data.data?.url || null,
       });
     }
 
-    // Если ошибка — сообщаем
-    if (prediction.status === 'failed') {
+    if (data.status === 'failed') {
       return res.status(200).json({
         status: 'failed',
-        error: prediction.error || 'Генерация не удалась',
+        error: data.error || 'Генерация не удалась',
       });
     }
 
-    // Иначе — всё ещё в процессе
-    return res.status(200).json({ status: prediction.status });
+    // pending или processing
+    return res.status(200).json({ status: data.status });
 
   } catch (error) {
-    console.error("Replicate status error:", error);
-    return res.status(500).json({ error: 'Ошибка при проверке статуса' });
+    console.error('Polza status exception:', error);
+    return res.status(500).json({ error: 'Ошибка соединения с Polza' });
   }
 }

@@ -6,7 +6,6 @@
 <meta name="theme-color" content="#020617" />
 <title>Morpheus — записывай сны</title>
 <style>
-  /* ===== Базовые стили ===== */
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
   :root {
@@ -38,7 +37,6 @@
     overflow: hidden;
   }
 
-  /* ===== Экраны ===== */
   .screen {
     flex: 1;
     overflow-y: auto;
@@ -48,7 +46,6 @@
   .screen.active { display: block; }
   .screen::-webkit-scrollbar { width: 0; }
 
-  /* ===== Лента ===== */
   .feed-header { margin-bottom: 28px; }
   .feed-header h1 {
     font-size: 26px;
@@ -71,7 +68,6 @@
     line-height: 1.6;
   }
 
-  /* ===== Карточка сна ===== */
   .dream-card {
     margin-bottom: 22px;
     border-radius: 22px;
@@ -123,7 +119,6 @@
     z-index: 2;
   }
 
-  /* Градиенты «настроения» */
   .mood-flight  { background: linear-gradient(135deg, #0c4a6e, #1e3a8a 50%, #0f172a) !important; }
   .mood-water   { background: linear-gradient(135deg, #134e4a, #155e75 50%, #0f172a) !important; }
   .mood-dark    { background: linear-gradient(135deg, #3b0764, #1e1b4b 50%, #000) !important; }
@@ -178,7 +173,6 @@
   .action-btn:hover, .action-btn.active { color: #e2e8f0; }
   .action-btn span:first-child { font-size: 14px; }
 
-  /* ===== Экран записи ===== */
   .composer-greeting {
     font-size: 11px;
     text-transform: uppercase;
@@ -243,7 +237,6 @@
   }
   .btn-ghost:hover { color: var(--text-dim); }
 
-  /* ===== Профиль ===== */
   .profile-head {
     display: flex;
     align-items: center;
@@ -298,7 +291,6 @@
     overflow: hidden;
   }
 
-  /* ===== Нижняя навигация ===== */
   #bottomNav {
     position: absolute;
     bottom: 0; left: 0; right: 0;
@@ -330,7 +322,6 @@
   }
   .nav-btn.center .icon { font-size: 22px; }
 
-  /* ===== Тост-уведомление ===== */
   #toast {
     position: absolute;
     top: 20px; left: 50%;
@@ -354,7 +345,6 @@
 <div id="app">
   <div id="toast"></div>
 
-  <!-- ЭКРАН: ЛЕНТА -->
   <section id="screen-feed" class="screen active">
     <header class="feed-header">
       <h1>Поток</h1>
@@ -363,7 +353,6 @@
     <div id="feedList"></div>
   </section>
 
-  <!-- ЭКРАН: ЗАПИСЬ -->
   <section id="screen-compose" class="screen">
     <p class="composer-greeting">Доброе утро</p>
     <h2 class="composer-title">Что тебе<br/>снилось?</h2>
@@ -374,7 +363,6 @@
     </div>
   </section>
 
-  <!-- ЭКРАН: ПРОФИЛЬ -->
   <section id="screen-profile" class="screen">
     <div class="profile-head">
       <div class="profile-avatar"></div>
@@ -387,7 +375,6 @@
     <div id="historyList"></div>
   </section>
 
-  <!-- НИЖНЯЯ НАВИГАЦИЯ -->
   <nav id="bottomNav">
     <div class="nav-row">
       <button class="nav-btn active" data-screen="feed">
@@ -407,11 +394,6 @@
 </div>
 
 <script>
-/* =========================================================
-   Morpheus — прототип на чистом JS
-   Данные хранятся в localStorage под ключом "morpheus_dreams"
-   ========================================================= */
-
 const STORAGE_KEY = 'morpheus_dreams';
 const MOODS = {
   flight:  { label: 'Полёт',    cls: 'mood-flight'  },
@@ -420,7 +402,6 @@ const MOODS = {
   neutral: { label: 'Нейтральный', cls: 'mood-neutral' },
 };
 
-/* --- Хранилище --- */
 function loadDreams() {
   try {
     return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
@@ -432,7 +413,6 @@ function saveDreams(dreams) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(dreams));
 }
 
-/* --- Утилиты --- */
 function escapeHtml(str) {
   return str.replace(/[&<>"']/g, c => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
@@ -453,26 +433,56 @@ function formatDate(iso) {
   } catch { return ''; }
 }
 
-/* --- Имитация AI-генерации видео --- */
-function mockGenerateVideo(text) {
-  return new Promise(resolve => {
-    // В реальном продукте здесь fetch() к API Runway/Pika/Replicate
+async function generateVideoReal(dreamText) {
+  const startRes = await fetch('/api/generate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ dreamText })
+  });
+
+  if (!startRes.ok) {
+    const err = await startRes.json().catch(() => ({}));
+    throw new Error(err.error || 'Ошибка запуска генерации');
+  }
+
+  const { predictionId } = await startRes.json();
+
+  return new Promise((resolve, reject) => {
+    const interval = setInterval(async () => {
+      try {
+        const statusRes = await fetch(`/api/status?id=${predictionId}`);
+        const data = await statusRes.json();
+
+        if (data.status === 'succeeded' && data.videoUrl) {
+          clearInterval(interval);
+          const moodKey = detectMood(dreamText);
+          resolve({
+            id: predictionId,
+            text: dreamText.trim(),
+            videoUrl: data.videoUrl,
+            mood: moodKey,
+            moodLabel: MOODS[moodKey].label,
+            moodClass: MOODS[moodKey].cls,
+            createdAt: new Date().toISOString(),
+            resonances: 0,
+          });
+        } else if (data.status === 'failed') {
+          clearInterval(interval);
+          reject(new Error(data.error || 'Генерация не удалась'));
+        }
+      } catch (e) {
+        clearInterval(interval);
+        reject(e);
+      }
+    }, 3000);
+
     setTimeout(() => {
-      const moodKey = detectMood(text);
-      resolve({
-        id: Date.now().toString() + Math.random().toString(36).slice(2, 7),
-        text: text.trim(),
-        mood: moodKey,
-        moodLabel: MOODS[moodKey].label,
-        moodClass: MOODS[moodKey].cls,
-        createdAt: new Date().toISOString(),
-        resonances: 0,
-      });
-    }, 1500);
+      clearInterval(interval);
+      reject(new Error('Превышено время ожидания генерации'));
+    }, 180000);
   });
 }
 
-/* --- Тост --- */
 let toastTimer = null;
 function showToast(msg) {
   const el = document.getElementById('toast');
@@ -482,9 +492,6 @@ function showToast(msg) {
   toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
 }
 
-/* =========================================================
-   РЕНДЕРИНГ
-   ========================================================= */
 let dreams = loadDreams();
 
 function renderFeed() {
@@ -497,10 +504,14 @@ function renderFeed() {
       </div>`;
     return;
   }
-  list.innerHTML = dreams.map(d => `
+  list.innerHTML = dreams.map(d => {
+    const previewContent = d.videoUrl
+      ? `<video src="${d.videoUrl}" style="width:100%;height:100%;object-fit:cover;" autoplay loop muted playsinline></video>`
+      : `<span class="placeholder-label">[Видео генерируется...]</span>`;
+    return `
     <article class="dream-card">
       <div class="dream-preview ${d.moodClass}">
-        <span class="placeholder-label">[Сгенерированное видео]</span>
+        ${previewContent}
         <span class="mood-tag">${escapeHtml(d.moodLabel)}</span>
       </div>
       <div class="dream-body">
@@ -521,7 +532,8 @@ function renderFeed() {
         </div>
       </div>
     </article>
-  `).join('');
+  `;
+  }).join('');
 }
 
 function renderProfile() {
@@ -547,9 +559,6 @@ function renderAll() {
   renderProfile();
 }
 
-/* =========================================================
-   НАВИГАЦИЯ
-   ========================================================= */
 const navButtons = document.querySelectorAll('.nav-btn');
 const screens = document.querySelectorAll('.screen');
 
@@ -557,11 +566,9 @@ function goTo(screenName) {
   screens.forEach(s => s.classList.toggle('active', s.id === `screen-${screenName}`));
   navButtons.forEach(b => b.classList.toggle('active', b.dataset.screen === screenName));
 
-  // Скрываем навигацию при записи, чтобы не отвлекать
   const nav = document.getElementById('bottomNav');
   nav.style.display = screenName === 'compose' ? 'none' : '';
 
-  // При переходе на запись — фокус в поле
   if (screenName === 'compose') {
     setTimeout(() => document.getElementById('dreamInput').focus(), 50);
   } else if (screenName === 'feed') {
@@ -575,9 +582,6 @@ navButtons.forEach(btn => {
   btn.addEventListener('click', () => goTo(btn.dataset.screen));
 });
 
-/* =========================================================
-   ФОРМА ЗАПИСИ
-   ========================================================= */
 const input    = document.getElementById('dreamInput');
 const genBtn   = document.getElementById('generateBtn');
 const cancelBtn = document.getElementById('cancelBtn');
@@ -591,20 +595,24 @@ genBtn.addEventListener('click', async () => {
   if (text.length < 3) return;
 
   genBtn.disabled = true;
-  genBtn.textContent = 'Создаём видео...';
+  genBtn.textContent = 'Создаём видео (это займёт до минуты)...';
 
-  const dream = await mockGenerateVideo(text);
+  try {
+    const dream = await generateVideoReal(text);
 
-  dreams.unshift(dream);
-  saveDreams(dreams);
+    dreams.unshift(dream);
+    saveDreams(dreams);
 
-  input.value = '';
-  genBtn.textContent = 'Визуализировать сон';
-  genBtn.disabled = true;
-
-  showToast('Сон записан');
-  renderAll();
-  goTo('feed');
+    input.value = '';
+    genBtn.textContent = 'Визуализировать сон';
+    showToast('Сон записан');
+    renderAll();
+    goTo('feed');
+  } catch (error) {
+    showToast(error.message || 'Ошибка генерации');
+    genBtn.textContent = 'Попробовать снова';
+    genBtn.disabled = false;
+  }
 });
 
 cancelBtn.addEventListener('click', () => {
@@ -613,9 +621,6 @@ cancelBtn.addEventListener('click', () => {
   goTo('feed');
 });
 
-/* =========================================================
-   ВЗАИМОДЕЙСТВИЕ В ЛЕНТЕ (делегирование событий)
-   ========================================================= */
 document.getElementById('feedList').addEventListener('click', (e) => {
   const resBtn = e.target.closest('[data-resonate]');
   if (resBtn) {
@@ -636,9 +641,6 @@ document.getElementById('feedList').addEventListener('click', (e) => {
   }
 });
 
-/* =========================================================
-   СТАРТ
-   ========================================================= */
 renderAll();
 </script>
 </body>
