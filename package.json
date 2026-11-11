@@ -1,0 +1,12 @@
+{
+  "name": "morpheus",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "echo 'No build step required'"
+  },
+  "dependencies": {
+    "replicate": "^1.0.0"
+  }
+}
