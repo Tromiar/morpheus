@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<meta name="theme-color" content="#020617" />
+<meta name="theme-color" content="#1c1b19" />
 <title>Morpheus — записывай сны</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -11,55 +11,29 @@
 
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-  /* ===== ТЁМНАЯ ТЕМА (по умолчанию) ===== */
   :root, [data-theme="dark"] {
-    --bg: #1c1b19;
-    --surface: #252320;
-    --surface-2: #2e2b27;
-    --border: #3a3630;
-    --text: #e8e2d8;
-    --text-dim: #b5ac9e;
-    --text-faint: #7a7266;
-    --accent: #c49a6c;
-    --accent-soft: rgba(196, 154, 108, 0.12);
-    --danger: #a86060;
-    --shadow: 0 1px 3px rgba(0,0,0,0.4), 0 4px 20px rgba(0,0,0,0.25);
+    --bg: #1c1b19; --surface: #252320; --surface-2: #2e2b27;
+    --border: #3a3630; --text: #e8e2d8; --text-dim: #b5ac9e;
+    --text-faint: #7a7266; --accent: #c49a6c; --accent-soft: rgba(196, 154, 108, 0.12);
+    --danger: #a86060; --shadow: 0 1px 3px rgba(0,0,0,0.4), 0 4px 20px rgba(0,0,0,0.25);
   }
-
-  /* ===== СВЕТЛАЯ ТЕМА ===== */
   [data-theme="light"] {
-    --bg: #f5f0e8;
-    --surface: #faf6ef;
-    --surface-2: #f0ebe1;
-    --border: #ddd5c7;
-    --text: #2c2a26;
-    --text-dim: #5a544a;
-    --text-faint: #8a8275;
-    --accent: #8b6a3e;
-    --accent-soft: rgba(139, 106, 62, 0.1);
-    --danger: #8b3a3a;
-    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 20px rgba(0,0,0,0.04);
+    --bg: #f5f0e8; --surface: #faf6ef; --surface-2: #f0ebe1;
+    --border: #ddd5c7; --text: #2c2a26; --text-dim: #5a544a;
+    --text-faint: #8a8275; --accent: #8b6a3e; --accent-soft: rgba(139, 106, 62, 0.1);
+    --danger: #8b3a3a; --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 20px rgba(0,0,0,0.04);
   }
 
   html, body {
-    height: 100%;
-    background: var(--bg);
-    color: var(--text);
+    height: 100%; background: var(--bg); color: var(--text);
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    overflow: hidden;
+    -webkit-font-smoothing: antialiased; overflow: hidden;
     transition: background 0.3s, color 0.3s;
   }
 
   #app {
-    max-width: 440px;
-    height: 100dvh;
-    margin: 0 auto;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    background: var(--bg);
-    overflow: hidden;
+    max-width: 440px; height: 100dvh; margin: 0 auto; position: relative;
+    display: flex; flex-direction: column; background: var(--bg); overflow: hidden;
   }
 
   .screen { flex: 1; overflow-y: auto; padding: 48px 20px 100px; display: none; }
@@ -69,97 +43,53 @@
   /* ===== ЛЕНТА ===== */
   .feed-header { margin-bottom: 28px; }
   .feed-header h1 {
-    font-family: 'Fraunces', serif;
-    font-size: 30px;
-    font-weight: 400;
-    letter-spacing: -0.02em;
-    color: var(--text);
+    font-family: 'Fraunces', serif; font-size: 30px; font-weight: 400;
+    letter-spacing: -0.02em; color: var(--text);
   }
-  .feed-header p {
-    font-size: 12px;
-    color: var(--text-faint);
-    margin-top: 6px;
-    letter-spacing: 0.03em;
-  }
+  .feed-header p { font-size: 12px; color: var(--text-faint); margin-top: 6px; letter-spacing: 0.03em; }
 
   .empty-state {
-    text-align: center;
-    padding: 80px 20px;
-    color: var(--text-faint);
-    font-family: 'Fraunces', serif;
-    font-size: 15px;
-    line-height: 1.7;
+    text-align: center; padding: 80px 20px; color: var(--text-faint);
+    font-family: 'Fraunces', serif; font-size: 15px; line-height: 1.7;
   }
 
-  /* ===== КАРТОЧКА СНА ===== */
   .dream-card {
-    margin-bottom: 20px;
-    border-radius: 20px;
-    overflow: hidden;
-    border: 1px solid var(--border);
-    border-left: 2px solid var(--accent);
-    background: var(--surface);
-    box-shadow: var(--shadow);
-    animation: cardIn 0.5s ease both;
-    transition: background 0.3s, border-color 0.3s;
+    margin-bottom: 20px; border-radius: 20px; overflow: hidden;
+    border: 1px solid var(--border); border-left: 2px solid var(--accent);
+    background: var(--surface); box-shadow: var(--shadow);
+    animation: cardIn 0.5s ease both; transition: background 0.3s, border-color 0.3s;
   }
-  @keyframes cardIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
+  @keyframes cardIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
   .dream-preview {
-    aspect-ratio: 4 / 3;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--surface-2);
-    margin: 10px 10px 0;
-    border-radius: 14px;
-    overflow: hidden;
-    border: 1px solid var(--border);
+    aspect-ratio: 4 / 3; position: relative; display: flex;
+    align-items: center; justify-content: center;
+    background: var(--surface-2); margin: 10px 10px 0;
+    border-radius: 14px; overflow: hidden; border: 1px solid var(--border);
+    cursor: pointer;
   }
-  .dream-preview video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    animation: videoFade 0.9s ease both;
-  }
-  @keyframes videoFade {
-    from { opacity: 0; filter: blur(8px); }
-    to   { opacity: 1; filter: blur(0); }
-  }
+  .dream-preview video { width: 100%; height: 100%; object-fit: cover; animation: videoFade 0.9s ease both; }
+  @keyframes videoFade { from { opacity: 0; filter: blur(8px); } to { opacity: 1; filter: blur(0); } }
   .dream-preview .placeholder-label {
-    font-family: 'Fraunces', serif;
-    font-style: italic;
-    font-size: 12px;
-    color: var(--text-faint);
-    position: relative;
-    z-index: 1;
+    font-family: 'Fraunces', serif; font-style: italic; font-size: 12px;
+    color: var(--text-faint); position: relative; z-index: 1;
   }
+  .countdown {
+    font-family: 'Fraunces', serif; font-size: 28px; font-weight: 300;
+    color: var(--text); letter-spacing: 0.02em; position: relative; z-index: 1;
+  }
+  .countdown small { font-size: 11px; color: var(--text-faint); display: block; text-align: center; margin-top: 4px; font-family: 'Inter', sans-serif; }
   .mood-tag {
-    position: absolute;
-    bottom: 10px;
-    left: 10px;
-    font-family: 'Inter', sans-serif;
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: var(--text);
-    background: var(--bg);
-    opacity: 0.85;
-    backdrop-filter: blur(8px);
-    padding: 4px 10px;
-    border-radius: 999px;
-    z-index: 2;
+    position: absolute; bottom: 10px; left: 10px; font-family: 'Inter', sans-serif;
+    font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--text); background: var(--bg); opacity: 0.85;
+    backdrop-filter: blur(8px); padding: 4px 10px; border-radius: 999px; z-index: 2;
   }
 
   .mood-flight  { background: linear-gradient(135deg, #2a3a4a, #1c2a3a 50%, var(--surface-2)) !important; }
   .mood-water   { background: linear-gradient(135deg, #2a4038, #1c3028 50%, var(--surface-2)) !important; }
   .mood-dark    { background: linear-gradient(135deg, #3a2030, #2a1824 50%, var(--surface-2)) !important; }
   .mood-neutral { background: linear-gradient(135deg, var(--surface-2), var(--surface)) !important; }
-
   [data-theme="light"] .mood-flight  { background: linear-gradient(135deg, #b8c8d8, #d8e0e8 50%, var(--surface-2)) !important; }
   [data-theme="light"] .mood-water   { background: linear-gradient(135deg, #b8d0c8, #d8e8e0 50%, var(--surface-2)) !important; }
   [data-theme="light"] .mood-dark    { background: linear-gradient(135deg, #d0b8c0, #e8d8dc 50%, var(--surface-2)) !important; }
@@ -167,28 +97,17 @@
 
   .dream-body { padding: 16px 18px 18px; }
   .dream-text {
-    font-family: 'Fraunces', serif;
-    font-size: 12px;
-    line-height: 1.4;
-    color: var(--text);
-    margin-bottom: 14px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+    font-family: 'Fraunces', serif; font-size: 14px; line-height: 1.5;
+    color: var(--text); margin-bottom: 12px; display: -webkit-box;
+    -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
   }
   .dream-meta { display: flex; align-items: center; justify-content: space-between; }
   .dream-author { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-faint); }
-  .author-dot {
-    width: 20px; height: 20px;
-    border-radius: 40% 60% 50% 50%;
-    background: var(--accent);
-    opacity: 0.5;
-  }
+  .author-dot { width: 20px; height: 20px; border-radius: 40% 60% 50% 50%; background: var(--accent); opacity: 0.5; }
   .dream-actions { display: flex; gap: 18px; }
   .action-btn {
-    background: none; border: none; color: var(--text-faint);
-    font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 5px;
+    background: none; border: none; color: var(--text-faint); font-size: 12px;
+    cursor: pointer; display: flex; align-items: center; gap: 5px;
     padding: 4px 0; transition: color 0.2s, transform 0.15s; font-family: inherit;
   }
   .action-btn:hover, .action-btn.active { color: var(--accent); }
@@ -196,35 +115,25 @@
   .action-btn span:first-child { font-size: 14px; }
 
   /* ===== ЭКРАН ЗАПИСИ ===== */
-  .composer-greeting {
-    font-size: 11px; text-transform: uppercase; letter-spacing: 0.22em;
-    color: var(--text-faint); margin-bottom: 10px;
-  }
+  .composer-greeting { font-size: 11px; text-transform: uppercase; letter-spacing: 0.22em; color: var(--text-faint); margin-bottom: 10px; }
   .composer-title {
-    font-family: 'Fraunces', serif;
-    font-size: 34px; font-weight: 400; line-height: 1.15;
-    letter-spacing: -0.02em; color: var(--text); margin-bottom: 28px;
+    font-family: 'Fraunces', serif; font-size: 34px; font-weight: 400;
+    line-height: 1.15; letter-spacing: -0.02em; color: var(--text); margin-bottom: 28px;
   }
   #dreamInput {
-    width: 100%; min-height: 200px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px; padding: 20px;
-    font-family: 'Fraunces', serif;
-    font-size: 17px; line-height: 1.7; color: var(--text);
-    resize: vertical; transition: border-color 0.2s, background 0.3s; outline: none;
+    width: 100%; min-height: 200px; background: var(--surface);
+    border: 1px solid var(--border); border-radius: 16px; padding: 20px;
+    font-family: 'Fraunces', serif; font-size: 17px; line-height: 1.7;
+    color: var(--text); resize: vertical; transition: border-color 0.2s, background 0.3s; outline: none;
   }
   #dreamInput::placeholder { color: var(--text-faint); font-style: italic; }
   #dreamInput:focus { border-color: var(--accent); }
 
   .composer-actions { margin-top: 22px; display: flex; flex-direction: column; gap: 10px; }
   .btn-primary {
-    width: 100%; padding: 16px; border-radius: 14px;
-    background: var(--accent); color: var(--bg);
-    font-family: 'Inter', sans-serif;
-    font-size: 14px; font-weight: 500; letter-spacing: 0.02em;
-    border: none; cursor: pointer;
-    transition: opacity 0.2s, transform 0.1s;
+    width: 100%; padding: 16px; border-radius: 14px; background: var(--accent); color: var(--bg);
+    font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 500;
+    letter-spacing: 0.02em; border: none; cursor: pointer; transition: opacity 0.2s, transform 0.1s;
   }
   .btn-primary:active { transform: scale(0.98); }
   .btn-primary:disabled { opacity: 0.35; cursor: not-allowed; }
@@ -236,54 +145,61 @@
   }
   .btn-ghost:hover { color: var(--text-dim); }
 
-  /* ===== ПРОФИЛЬ ===== */
-  .profile-head { display: flex; align-items: center; gap: 16px; margin-bottom: 36px; }
+  /* ===== ПРОФИЛЬ (СЕТКА) ===== */
+  .profile-head { display: flex; align-items: center; gap: 16px; margin-bottom: 28px; }
   .profile-avatar {
-    width: 62px; height: 62px;
-    border-radius: 40% 60% 50% 50%;
+    width: 62px; height: 62px; border-radius: 40% 60% 50% 50%;
     background: linear-gradient(135deg, var(--accent), var(--surface-2));
-    border: 1px solid var(--border);
-    opacity: 0.9;
+    border: 1px solid var(--border); opacity: 0.9;
   }
-  .profile-name {
-    font-family: 'Fraunces', serif;
-    font-size: 22px; font-weight: 400; color: var(--text);
-  }
+  .profile-name { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 400; color: var(--text); }
   .profile-stat { font-size: 12px; color: var(--text-faint); margin-top: 4px; }
 
-  .section-label {
-    font-size: 11px; text-transform: uppercase; letter-spacing: 0.2em;
-    color: var(--text-faint); margin-bottom: 14px;
-  }
+  .section-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.2em; color: var(--text-faint); margin-bottom: 14px; }
 
-  .history-item {
-    padding: 14px 16px;
-    border-radius: 14px;
-    border: 1px solid var(--border);
-    border-left: 2px solid var(--accent);
-    background: var(--surface);
-    margin-bottom: 10px;
-    transition: background 0.3s;
+  .dream-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;
   }
-  .history-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-  .history-mood {
-    font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em;
-    color: var(--accent);
+  .grid-item {
+    aspect-ratio: 1 / 1; border-radius: 10px; overflow: hidden;
+    border: 1px solid var(--border); background: var(--surface-2);
+    position: relative; cursor: pointer; display: flex;
+    align-items: center; justify-content: center;
+    transition: transform 0.15s;
   }
-  .history-date { font-size: 10px; color: var(--text-faint); }
-  .history-text {
-    font-family: 'Fraunces', serif;
-    font-size: 15px; line-height: 1.6; color: var(--text-dim);
-    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  .grid-item:active { transform: scale(0.96); }
+  .grid-item video { width: 100%; height: 100%; object-fit: cover; }
+  .grid-item .countdown { font-size: 18px; }
+  .grid-item .countdown small { font-size: 9px; }
+
+  /* ===== МОДАЛЬНОЕ ОКНО ===== */
+  #dreamModal {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(8px); z-index: 200;
+    display: none; align-items: center; justify-content: center;
+    padding: 20px;
   }
+  #dreamModal.show { display: flex; }
+  .modal-content {
+    max-width: 440px; width: 100%; max-height: 90vh; overflow-y: auto;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 20px; padding: 20px; position: relative;
+  }
+  .modal-close {
+    position: absolute; top: 12px; right: 12px; width: 32px; height: 32px;
+    border-radius: 50%; background: var(--bg); border: 1px solid var(--border);
+    color: var(--text); font-size: 18px; cursor: pointer; display: flex;
+    align-items: center; justify-content: center; z-index: 1;
+  }
+  .modal-video { width: 100%; border-radius: 12px; margin-bottom: 16px; background: #000; }
+  .modal-text { font-family: 'Fraunces', serif; font-size: 16px; line-height: 1.7; color: var(--text); margin-bottom: 12px; }
+  .modal-meta { font-size: 12px; color: var(--text-faint); display: flex; justify-content: space-between; }
 
   /* ===== НИЖНЯЯ НАВИГАЦИЯ ===== */
   #bottomNav {
     position: absolute; bottom: 0; left: 0; right: 0;
-    border-top: 1px solid var(--border);
-    background: var(--bg);
-    opacity: 0.97;
-    backdrop-filter: blur(16px);
+    border-top: 1px solid var(--border); background: var(--bg);
+    opacity: 0.97; backdrop-filter: blur(16px);
     padding: 10px 0 calc(10px + env(safe-area-inset-bottom));
     transition: transform 0.3s ease, background 0.3s;
   }
@@ -298,12 +214,8 @@
   .nav-btn .icon { font-size: 20px; line-height: 1; }
   .nav-btn .label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; }
   .nav-btn.center {
-    background: var(--accent);
-    color: var(--bg);
-    border-radius: 999px;
-    padding: 10px 22px;
-    flex-direction: row;
-    gap: 8px;
+    background: var(--accent); color: var(--bg); border-radius: 999px;
+    padding: 10px 22px; flex-direction: row; gap: 8px;
   }
   .nav-btn.center .icon { font-size: 18px; }
   .nav-btn.center .label { font-size: 12px; letter-spacing: 0.04em; text-transform: none; }
@@ -312,48 +224,30 @@
   #toast {
     position: absolute; bottom: 90px; left: 50%;
     transform: translateX(-50%) translateY(20px);
-    background: var(--surface);
-    border: 1px solid var(--border);
-    color: var(--text);
-    padding: 10px 18px;
-    border-radius: 999px;
-    font-size: 12px;
-    white-space: nowrap;
-    opacity: 0;
-    transition: opacity 0.3s, transform 0.3s;
-    z-index: 100; pointer-events: none;
+    background: var(--surface); border: 1px solid var(--border); color: var(--text);
+    padding: 10px 18px; border-radius: 999px; font-size: 12px; white-space: nowrap;
+    opacity: 0; transition: opacity 0.3s, transform 0.3s; z-index: 100; pointer-events: none;
   }
   #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-  /* ===== ЭКРАН АВТОРИЗАЦИИ ===== */
+  /* ===== АВТОРИЗАЦИЯ ===== */
   #screen-auth { flex-direction: column; justify-content: center; padding-top: 20px; }
   #screen-auth.active { display: flex; }
   .auth-title {
-    font-family: 'Fraunces', serif;
-    font-size: 38px; font-weight: 400; letter-spacing: -0.02em;
-    color: var(--text); margin-bottom: 10px;
+    font-family: 'Fraunces', serif; font-size: 38px; font-weight: 400;
+    letter-spacing: -0.02em; color: var(--text); margin-bottom: 10px;
   }
-  .auth-sub {
-    font-family: 'Fraunces', serif;
-    font-style: italic;
-    font-size: 15px; color: var(--text-faint);
-    margin-bottom: 32px; line-height: 1.6;
-  }
+  .auth-sub { font-family: 'Fraunces', serif; font-style: italic; font-size: 15px; color: var(--text-faint); margin-bottom: 32px; line-height: 1.6; }
   .auth-input {
-    width: 100%; padding: 16px; border-radius: 14px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    color: var(--text); font-size: 15px; font-family: 'Inter', sans-serif;
-    outline: none; margin-bottom: 12px;
+    width: 100%; padding: 16px; border-radius: 14px; background: var(--surface);
+    border: 1px solid var(--border); color: var(--text); font-size: 15px;
+    font-family: 'Inter', sans-serif; outline: none; margin-bottom: 12px;
     transition: border-color 0.2s, background 0.3s;
   }
   .auth-input:focus { border-color: var(--accent); }
   .auth-input::placeholder { color: var(--text-faint); }
   .auth-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
-  .auth-toggle {
-    font-size: 13px; color: var(--text-faint); text-align: center;
-    margin-top: 16px; cursor: pointer;
-  }
+  .auth-toggle { font-size: 13px; color: var(--text-faint); text-align: center; margin-top: 16px; cursor: pointer; }
   .auth-toggle:hover { color: var(--text-dim); }
 </style>
 </head>
@@ -400,9 +294,9 @@
         <p class="profile-stat" id="profileCount">0 снов записано</p>
       </div>
     </div>
-    <p class="section-label">История</p>
-    <div id="historyList"></div>
-    <button id="logoutBtn" class="btn-ghost" style="margin-top:20px;">Выйти</button>
+    <p class="section-label">Мои сны</p>
+    <div id="dreamGrid" class="dream-grid"></div>
+    <button id="logoutBtn" class="btn-ghost" style="margin-top:24px;">Выйти</button>
   </section>
 
   <nav id="bottomNav">
@@ -420,6 +314,14 @@
   </nav>
 </div>
 
+<!-- Модальное окно -->
+<div id="dreamModal">
+  <div class="modal-content">
+    <button class="modal-close" id="modalClose">×</button>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
 <script>
 const SUPABASE_URL = 'https://4429cd6970d7f3aa1fb2af3a4fd1153b.supa.tatnet.cloud';
 const SUPABASE_ANON_KEY = 'sb_publishable_Cm2pgWzeHXVfbk5zP1p7UdDZvtYm';
@@ -433,24 +335,28 @@ const MOODS = {
   neutral: { label: 'Нейтральный', cls: 'mood-neutral' },
 };
 
+const GEN_DURATION = 120; // секунд (2 минуты)
+
 let currentUser = null;
 let dreams = [];
+let countdownTimer = null;
 
 function escapeHtml(str) {
   return String(str).replace(/[&<>"']/g, c => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
   }[c]));
 }
-function detectMood(text) {
-  const t = text.toLowerCase();
-  if (/полет|лета|летел|летела|парю|крыл/.test(t)) return 'flight';
-  if (/вод|мор|океан|река|озер|плав|тонул|плава/.test(t)) return 'water';
-  if (/страх|тревог|кошмар|ужас|тьм|паден|погон/.test(t)) return 'dark';
-  return 'neutral';
-}
 function formatDate(iso) {
   try { return new Date(iso).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' }); }
   catch { return ''; }
+}
+function formatCountdown(createdAt) {
+  const elapsed = Math.floor((Date.now() - new Date(createdAt).getTime()) / 1000);
+  const remaining = Math.max(0, GEN_DURATION - elapsed);
+  if (remaining === 0) return 'Почти готово...';
+  const m = Math.floor(remaining / 60);
+  const s = remaining % 60;
+  return `${m}:${String(s).padStart(2, '0')}`;
 }
 
 let toastTimer = null;
@@ -545,6 +451,8 @@ async function loadFeed() {
     if (error) throw error;
     dreams = data || [];
     renderFeed();
+    renderProfile();
+    startCountdown();
   } catch (e) {
     list.innerHTML = `<div class="empty-state"><p>Не удалось загрузить ленту.</p><p style="font-size:11px;margin-top:8px;">${escapeHtml(e.message)}</p></div>`;
   }
@@ -558,13 +466,16 @@ function renderFeed() {
   }
   list.innerHTML = dreams.map(d => {
     const mood = MOODS[d.mood] || MOODS.neutral;
-    const preview = d.video_url
-      ? `<video src="${escapeHtml(d.video_url)}" style="width:100%;height:100%;object-fit:cover;" autoplay loop muted playsinline></video>`
-      : `<span class="placeholder-label">[Видео генерируется...]</span>`;
+    let preview;
+    if (d.video_url) {
+      preview = `<video src="${escapeHtml(d.video_url)}" style="width:100%;height:100%;object-fit:cover;" autoplay loop muted playsinline></video>`;
+    } else {
+      preview = `<div class="countdown" data-created="${d.created_at}">${formatCountdown(d.created_at)}<small>создаётся</small></div>`;
+    }
     const isMine = currentUser && d.user_id === currentUser.id;
     return `
     <article class="dream-card">
-      <div class="dream-preview ${mood.cls}">
+      <div class="dream-preview ${mood.cls}" data-open="${d.id}">
         ${preview}
         <span class="mood-tag">${mood.label}</span>
       </div>
@@ -594,22 +505,37 @@ function renderProfile() {
   document.getElementById('profileEmail').textContent = currentUser.email || 'Профиль';
   const mine = dreams.filter(d => d.user_id === currentUser.id);
   document.getElementById('profileCount').textContent = `${mine.length} снов записано`;
-  const hist = document.getElementById('historyList');
+  const grid = document.getElementById('dreamGrid');
   if (!mine.length) {
-    hist.innerHTML = `<p class="empty-state" style="padding:30px 0">Твои сны появятся здесь.</p>`;
+    grid.innerHTML = `<p class="empty-state" style="grid-column:1/-1;padding:30px 0">Твои сны появятся здесь.</p>`;
     return;
   }
-  hist.innerHTML = mine.map(d => {
+  grid.innerHTML = mine.map(d => {
     const mood = MOODS[d.mood] || MOODS.neutral;
-    return `
-    <div class="history-item">
-      <div class="history-top">
-        <span class="history-mood">${mood.label}</span>
-        <span class="history-date">${formatDate(d.created_at)}</span>
-      </div>
-      <p class="history-text">${escapeHtml(d.text)}</p>
-    </div>`;
+    let inner;
+    if (d.video_url) {
+      inner = `<video src="${escapeHtml(d.video_url)}" muted playsinline></video>`;
+    } else {
+      inner = `<div class="countdown" data-created="${d.created_at}">${formatCountdown(d.created_at)}</div>`;
+    }
+    return `<div class="grid-item ${mood.cls}" data-open="${d.id}">${inner}</div>`;
   }).join('');
+}
+
+function startCountdown() {
+  if (countdownTimer) clearInterval(countdownTimer);
+  countdownTimer = setInterval(() => {
+    if (document.hidden) return;
+    document.querySelectorAll('[data-created]').forEach(el => {
+      const created = el.getAttribute('data-created');
+      const text = formatCountdown(created);
+      if (el.classList.contains('countdown')) {
+        el.innerHTML = `${text}<small>создаётся</small>`;
+      } else {
+        el.textContent = text;
+      }
+    });
+  }, 10000);
 }
 
 const input = document.getElementById('dreamInput');
@@ -686,9 +612,11 @@ cancelBtn.addEventListener('click', () => {
   showScreen('feed');
 });
 
+/* --- Резонансы --- */
 document.getElementById('feedList').addEventListener('click', async (e) => {
   const resBtn = e.target.closest('[data-resonate]');
   if (resBtn) {
+    e.stopPropagation();
     const id = resBtn.dataset.resonate;
     try {
       const { error } = await sb.rpc('increment_resonance', { dream_id: id });
@@ -701,11 +629,44 @@ document.getElementById('feedList').addEventListener('click', async (e) => {
   }
   const echoBtn = e.target.closest('[data-echo]');
   if (echoBtn) {
+    e.stopPropagation();
     echoBtn.classList.toggle('active');
     showToast('Отмечено как «отозвалось»');
+    return;
   }
+  const openEl = e.target.closest('[data-open]');
+  if (openEl) openModal(openEl.dataset.open);
 });
 
+/* --- Модальное окно --- */
+const modal = document.getElementById('dreamModal');
+const modalBody = document.getElementById('modalBody');
+const modalClose = document.getElementById('modalClose');
+
+function openModal(dreamId) {
+  const d = dreams.find(x => x.id === dreamId);
+  if (!d) return;
+  const mood = MOODS[d.mood] || MOODS.neutral;
+  modalBody.innerHTML = `
+    ${d.video_url ? `<video src="${escapeHtml(d.video_url)}" class="modal-video" controls autoplay loop playsinline></video>` : `<div class="${mood.cls}" style="aspect-ratio:4/3;border-radius:12px;margin-bottom:16px;display:flex;align-items:center;justify-content:center;"><span class="countdown" data-created="${d.created_at}">${formatCountdown(d.created_at)}</span></div>`}
+    <p class="modal-text">${escapeHtml(d.text)}</p>
+    <div class="modal-meta">
+      <span>${mood.label}</span>
+      <span>${formatDate(d.created_at)}</span>
+    </div>
+  `;
+  modal.classList.add('show');
+}
+function closeModal() {
+  modal.classList.remove('show');
+  modalBody.innerHTML = '';
+}
+modalClose.addEventListener('click', closeModal);
+modal.addEventListener('click', (e) => {
+  if (e.target === modal) closeModal();
+});
+
+/* --- Инициализация --- */
 async function init() {
   const { data: { session } } = await sb.auth.getSession();
   if (session?.user) {
@@ -731,11 +692,9 @@ init();
 </script>
 
 <script>
-  // Тема: по умолчанию тёмная, запоминаем выбор
   const savedTheme = localStorage.getItem('morpheus_theme') || 'dark';
   document.documentElement.setAttribute('data-theme', savedTheme);
 
-  // Скрытие нижней навигации при скролле вниз
   const nav = document.getElementById('bottomNav');
   let lastScroll = 0;
   document.addEventListener('scroll', (e) => {
